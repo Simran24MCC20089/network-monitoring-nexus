@@ -1,0 +1,30 @@
+
+groups:
+  - name: network-alerts
+    rules:
+      - alert: NetworkTargetDown
+        expr: network_check_success == 0
+        for: 15s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Network target is offline"
+          description: "Target {{ $labels.target }} is unreachable"
+
+      - alert: HighNetworkLatency
+        expr: network_latency_ms > 500
+        for: 30s
+        labels:
+          severity: warning
+        annotations:
+          summary: "High network latency"
+          description: "High latency detected for {{ $labels.target }}"
+
+      - alert: MultipleTargetsDown
+        expr: sum(network_check_success) < 2
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Multiple network targets are offline"
+          description: "Less than two network targets are online"
